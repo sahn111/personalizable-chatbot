@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from generate_response_service import generate_response
 import time
 load_dotenv()
-
+flag = False
 st.title("Fitness Center Chat Bot")
 
 # Initialize chat history
@@ -16,7 +16,10 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
 with st.sidebar:
+
+    st.title("Hakkında")
     st.info("Merhaba, şuanda bulunduğunuz sayfadaki salon bilgilerinin tamamı rastgele bir biçimde GPT-4 tarafından oluşturulmuştur.")
 
     st.info("""
@@ -46,21 +49,11 @@ with st.sidebar:
             \t* FAISS
             \t* LLMChain
     """)
-
-    with st.spinner("Bot Hazırlanıyor..."):
-        time.sleep(5)
-        st.success("Hazır!")
-
-# Accept user input
-if prompt := st.chat_input("Soru sorun..."):
-    # Add user message to chat history
+if prompt := st.chat_input("Örn: Spor salonu üyelik ücreti nedir?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
-    # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
-
- # Display assistant response in chat message container
+    response = generate_response(prompt)
+    st.session_state.messages.append({"role": "assistant", "content": response})    
     with st.chat_message("assistant"):
-        stream = generate_response(st.session_state.messages[-1]["content"])
-        response = st.write(stream)
-    st.session_state.messages.append({"role": "assistant", "content": response})
+        st.markdown(response)
