@@ -13,7 +13,6 @@ load_dotenv()
 loader = CSVLoader(file_path="test_csv.csv")
 documents = loader.load()
 
-
 embeddings = OpenAIEmbeddings()
 db = FAISS.from_documents(documents, embeddings)
 
@@ -21,9 +20,6 @@ db = FAISS.from_documents(documents, embeddings)
 def retrieve_info(query):
     flag = True
     docs_and_scores = db.similarity_search_with_score(query, k=4)
-    print(docs_and_scores)
-    counter = 0
-    most_similar_docs = ""
     bigger_score = 1
     page_contents_array = []
     for doc in docs_and_scores:
@@ -31,27 +27,27 @@ def retrieve_info(query):
             if doc[-1] < bigger_score:
               bigger_score = doc[-1]
             page_contents_array.append(doc[0].page_content)
-    print(bigger_score)
     if bigger_score > 0.4:
       flag = False
-    print(page_contents_array)
     return page_contents_array, flag
-
 
 # 3. Setup LLMChain & prompts
 llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
 
 template = """
-As a customer service representative dedicated to excellence, 
-your task is to craft responses to prospects by closely following established best practices. 
+As a customer service representative dedicated to happy answers, 
+your task is to craft responses to prospects by closely following established best practices.
 When you receive a message from a prospect, 
 you must analyze it and then respond in a manner that mirrors the style, tone, and argumentation of previously successful interactions. 
 This approach ensures consistency and leverages proven strategies to engage and convert prospects.
 
 Instructions for crafting a response:
-1. Ensure your reply closely aligns with or directly mirrors the established best practices. This includes matching the length, tone of voice, logical structure, and other relevant details that have historically contributed to successful communications.
+1. Ensure your reply closely aligns with or directly mirrors the established best practices. 
+This includes matching the length, tone of voice, logical structure, and other relevant details that have historically contributed to successful communications.
 
 2. If user greets you, you greet back and do nothing more.
+
+3. Speak non-formally
 
 Below is a message from a prospect that requires your attention:
 {message}
@@ -59,7 +55,8 @@ Below is a message from a prospect that requires your attention:
 Accompanying this message, you’ll find a compilation of best practices that have been effective in similar situations:
 {best_practice}
 
-Based on the information provided, draft the ideal response to send to this prospect, ensuring it embodies the principles and characteristics of the outlined best practices.
+Based on the information provided, draft the ideal response to send to this prospect, 
+ensuring it embodies the principles and characteristics of the outlined best practices.
 """
 
 prompt = PromptTemplate(
