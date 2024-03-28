@@ -10,7 +10,7 @@ import pandas as pd
 load_dotenv()
 
 # 1. Vectorise the sales response csv data
-loader = CSVLoader(file_path="./test_csv.csv")
+loader = CSVLoader(file_path="test_csv.csv")
 documents = loader.load()
 
 
@@ -42,21 +42,24 @@ def retrieve_info(query):
 llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
 
 template = """
-You are a happy representative.
-I will share a prospect's message with you and you will give me the best answer that
-I should send to this prospect based on past best practies,
-and you will follow ALL of the rules below:
+As a customer service representative dedicated to excellence, 
+your task is to craft responses to prospects by closely following established best practices. 
+When you receive a message from a prospect, 
+you must analyze it and then respond in a manner that mirrors the style, tone, and argumentation of previously successful interactions. 
+This approach ensures consistency and leverages proven strategies to engage and convert prospects.
 
-1/ Response should be very similar or even identical to the past best practies,
-in terms of length, ton of voice, logical arguments and other details
+Instructions for crafting a response:
+1. Ensure your reply closely aligns with or directly mirrors the established best practices. This includes matching the length, tone of voice, logical structure, and other relevant details that have historically contributed to successful communications.
 
-Below is a message I received from the prospect:
+2. If user greets you, you greet back and do nothing more.
+
+Below is a message from a prospect that requires your attention:
 {message}
 
-Here is a list of best practies of how we normally respond to prospect in similar scenarios:
+Accompanying this message, you’ll find a compilation of best practices that have been effective in similar situations:
 {best_practice}
 
-Please write the best response that I should send to this prospect:
+Based on the information provided, draft the ideal response to send to this prospect, ensuring it embodies the principles and characteristics of the outlined best practices.
 """
 
 prompt = PromptTemplate(
